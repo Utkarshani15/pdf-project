@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CCTV Work Completion Form</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background:linear-gradient(135deg,#eef2f7,#dfe9f3);
+margin:0;
+padding:30px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+background:white;
+padding:35px;
+border-radius:18px;
+box-shadow:0 20px 60px rgba(0,0,0,0.08);
+width: 100%;
+padding: 10px;
+}
+
+h1{
+text-align:center;
+margin-bottom:35px;
+font-weight:600;
+color:#1f2937;
+}
+
+/* ===== INFO TABLE ===== */
+
+.form-table{
+width:100%;
+border-collapse:separate;
+border-spacing:0 12px;
+}
+
+.form-table td{
+padding:0;
+border:none;
+}
+
+.form-table td:first-child{
+font-weight:600;
+color:#374151;
+width:250px;
+}
+
+.form-table input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #e5e7eb;
+background:#f9fafb;
+transition:.2s;
+}
+
+.form-table select {
+width: 100%;
+padding: 12px;
+border-radius: 10px;
+border: 1px solid #e5e7eb;
+background: #f9fafb;
+transition: .2s;
+}
+
+.form-table input:focus{
+outline:none;
+border:1px solid #3b82f6;
+background:white;
+box-shadow:0 0 0 3px rgba(59,130,246,.1);
+}
+
+/* ===== ITEM TABLE ===== */
+
+.item-table{
+width:100%;
+border-collapse:collapse;
+margin-top:25px;
+overflow:hidden;
+border-radius:12px;
+display: block;
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+}
+
+.item-table th{
+background:linear-gradient(135deg,#3b82f6,#06b6d4);
+color:white;
+padding:12px;
+font-weight:600;
+font-size:14px;
+}
+
+.item-table td{
+padding:8px;
+border-bottom:1px solid #f1f5f9;
+}
+
+.item-table tr:hover{
+background:#f8fafc;
+}
+
+.item-table input{
+width:100%;
+padding:8px;
+border-radius:8px;
+border:1px solid #e5e7eb;
+background:#f9fafb;
+}
+
+/* ===== FILE UPLOAD ===== */
+
+label{
+display:block;
+margin-top:25px;
+font-weight:600;
+color:#374151;
+}
+
+input[type="file"]{
+margin-top:8px;
+}
+
+/* ===== BUTTON ===== */
+
+button{
+margin-top:30px;
+padding:14px 30px;
+font-size:16px;
+background:linear-gradient(135deg,#2563eb,#06b6d4);
+color:white;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-weight:600;
+transition:.3s;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 12px 25px rgba(37,99,235,.35);
+}
+
+.preview-btn{
+margin-left:20px;
+padding:14px 25px;
+background:#111827;
+color:white;
+border-radius:12px;
+text-decoration:none;
+font-weight:600;
+}
+
+.preview-btn:hover{
+background:#000;
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  /* STACK LABEL + INPUT */
+  .form-table tr {
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .form-table td {
+    display: block;
+    width: 100% !important;
+  }
+
+  .form-table td:first-child {
+    font-size: 10px;
+    margin-bottom: 3px;
+  }
+
+  .form-table input,
+  .form-table select {
+    padding: 6px 8px;
+    font-size: 10px;
+    height: 25px;
+    border-radius: 6px;
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .preview-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 768px) {
+  .item-table {
+    display: table !important;
+    width: 100%;
+    overflow-x: hidden !important;
+  }
+  .item-table th,
+  .item-table td {
+    font-size: 9px;
+    padding: 4px;
+    word-break: break-word;
+  }
+  .item-table input {
+    padding: 3px;
+    font-size: 9px;
+    height: 20px;
+  }
+  .item-table th:nth-child(2),
+  .item-table td:nth-child(2) {
+    width: 25%;
+    white-space: normal;
+  }
+  .item-table th:nth-child(3),
+  .item-table td:nth-child(3) {
+    width: 15%;
+  }
+
+  .item-table th:nth-child(4),
+  .item-table td:nth-child(4) {
+    width: 15%;
+  }
+
+  .item-table th:nth-child(5),
+  .item-table td:nth-child(5) {
+    width: 15%;
+  }
+
+}
+
+.upload-section {
+  margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+
+  /* 🔥 Section spacing */
+  label {
+    margin-top: 12px;
+    font-size: 9px;
+  }
+
+  /* 🔥 File input full width */
+  input[type="file"] {
+    width: 100%;
+    font-size: 8px;
+    padding: 6px 0;
+  }
+
+  /* 🔥 Remove extra gaps caused by <br> */
+  br {
+    display: none;
+  }
+
+  /* 🔥 Button spacing */
+  button {
+    width: 60%;
+    align-self: center;
+    margin-top: 12px;
+    padding: 12px;
+    font-size: 8px;
+    border-radius: 10px;
+  }
+
+  /* Excel download button */
+  button[onclick="downloadExcel()"] {
+    margin-top: 10px;
+  }
+
+  /* Preview button */
+  .preview-btn {
+    width: 60%;
+    align-self: center;
+    margin-top: -10px;
+    padding: 12px;
+    font-size: 11px;
+    border-radius: 10px;
+    background: #111827;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .preview-btn:hover {
+    background: #000;
+  }
+
+}
+
+</style>
+
+<script>
+function calculateExpiry() {
+    const endDate = document.getElementById('end_date').value;
+    const expiryDateField = document.getElementById('expiry_date');
+
+    if (endDate) {
+        const date = new Date(endDate);
+        date.setFullYear(date.getFullYear() + 1);
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        expiryDateField.value = `${day}/${month}/${year}`;
+    } else {
+        expiryDateField.value = '';
+    }
+}
+
+async function downloadExcel() {
+    const form = document.getElementById("pdfForm");
+    const formData = new FormData(form);
+
+    const res = await fetch("/download-excel", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    // 🔥 THIS is key (same as PDF)
+    window.location.href = data.download_url;
+}
+</script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>CCTV Work Completion Form</h1>
+
+<form id="pdfForm" enctype="multipart/form-data">
+
+<!-- PO INFORMATION TABLE -->
+
+<table class="form-table">
+
+<tr>
+<td><b>PO Number & Date</b></td>
+<td><input type="text" name="po"></td>
+</tr>
+
+<tr>
+<td><b>Blinkit Store Name</b></td>
+<td><input type="text" name="store"></td>
+</tr>
+
+<tr>
+<td><b>Site Type</b></td>
+<td><input type="text" name="site_type"></td>
+</tr>
+
+<tr>
+<td><b>Store Address</b></td>
+<td><input type="text" name="address"></td>
+</tr>
+
+<tr>
+<td><b>Start Date</b></td>
+<td><input type="date" name="start_date" id="start_date" onchange="calculateExpiry()"></td>
+</tr>
+
+<tr>
+<td><b>End Date</b></td>
+<td><input type="date" name="end_date" id="end_date" onchange="calculateExpiry()"></td>
+</tr>
+
+<tr>
+<td><b>Warranty Expiry Date</b></td>
+<td><input type="text" name="expiry_date" id="expiry_date" readonly style="background-color: #f0f0f0;" placeholder="DD/MM/YYYY"></td>
+</tr>
+
+</table>
+
+<!-- ITEM TABLE -->
+
+<table class="item-table">
+
+<tr>
+<th style="width:80px;">Category</th>
+<th>Item Description</th>
+<th style="width:80px;">Unit</th>
+<th style="width:120px;">Actual Installed Qty</th>
+<th style="width:120px;">Remarks</th>
+</tr>
+
+<tr>
+<td rowspan="26" style="text-align:center;">CCTV</td>
+<td>SITC of 2 MP Indoor Bullet IP Camera</td>
+<td><input name="unit1" value="Nos"></td>
+<td><input name="qty1"></td>
+<td><input name="remark1"></td>
+</tr>
+
+<tr>
+<td>SITC of 2 MP Indoor Dome IP Camera</td>
+<td><input name="unit2" value="Nos"></td>
+<td><input name="qty2"></td>
+<td><input name="remark2"></td>
+</tr>
+
+<tr>
+<td>Camera Box</td>
+<td><input name="unit3" value="Nos"></td>
+<td><input name="qty3"></td>
+<td><input name="remark3"></td>
+</tr>
+
+<tr>
+<td>12U Rack with other hardware</td>
+<td><input name="unit4" value="Nos"></td>
+<td><input name="qty4"></td>
+<td><input name="remark4"></td>
+</tr>
+
+<tr>
+<td>6U Rack with other hardware</td>
+<td><input name="unit5" value="Nos"></td>
+<td><input name="qty5"></td>
+<td><input name="remark5"></td>
+</tr>
+
+<tr>
+<td>9U Rack with other hardware</td>
+<td><input name="unit6" value="Nos"></td>
+<td><input name="qty6"></td>
+<td><input name="remark6"></td>
+</tr>
+
+<tr>
+<td>16 Port POE Switch with 2 SFP Port</td>
+<td><input name="unit7" value="Nos"></td>
+<td><input name="qty7"></td>
+<td><input name="remark7"></td>
+</tr>
+
+<tr>
+<td>24 Port POE Switch with 2 SFP Port</td>
+<td><input name="unit8" value="Nos"></td>
+<td><input name="qty8"></td>
+<td><input name="remark8"></td>
+</tr>
+
+<tr>
+<td>SITC of 8Tb Surveillance HDD</td>
+<td><input name="unit9" value="Nos"></td>
+<td><input name="qty9"></td>
+<td><input name="remark9"></td>
+</tr>
+
+<tr>
+<td>Patch Chord 1 Mtr</td>
+<td><input name="unit10" value="Nos"></td>
+<td><input name="qty10"></td>
+<td><input name="remark10"></td>
+</tr>
+
+<tr>
+<td>24 Port Patch Panel</td>
+<td><input name="unit11" value="Nos"></td>
+<td><input name="qty11"></td>
+<td><input name="remark11"></td>
+</tr>
+
+<tr>
+<td>1U Cable Manager</td>
+<td><input name="unit12" value="Nos"></td>
+<td><input name="qty12"></td>
+<td><input name="remark12"></td>
+</tr>
+
+<tr>
+<td>Supply & Laying of Cat-6 Cable (Only Copper Wire)</td>
+<td><input name="unit13" value="Mtr"></td>
+<td><input name="qty13"></td>
+<td><input name="remark13"></td>
+</tr>
+
+<tr>
+<td>SITC of 32CH NVR 4 Sata</td>
+<td><input name="unit14" value="Nos"></td>
+<td><input name="qty14"></td>
+<td><input name="remark14"></td>
+</tr>
+
+<tr>
+<td>RJ45 Connector</td>
+<td><input name="unit15" value="Nos"></td>
+<td><input name="qty15"></td>
+<td><input name="remark15"></td>
+</tr>
+
+<tr>
+<td>Supply & laying 25mm PVC Conduits with accessories</td>
+<td><input name="unit16" value="Mtr"></td>
+<td><input name="qty16"></td>
+<td><input name="remark16"></td>
+</tr>
+
+<tr>
+<td>HDMI Switcher (Vanition Switch With 2 HDMI Cables - 5 MTR)</td>
+<td><input name="unit17" value="Nos"></td>
+<td><input name="qty17"></td>
+<td><input name="remark17"></td>
+</tr>
+
+<tr>
+<td>Wall Mount Stand For LED</td>
+<td><input name="unit18" value="Nos"></td>
+<td><input name="qty18"></td>
+<td><input name="remark18"></td>
+</tr>
+
+<tr>
+<td>Wireless Mouse</td>
+<td><input name="unit19" value="Nos"></td>
+<td><input name="qty19"></td>
+<td><input name="remark19"></td>
+</tr>
+
+<tr>
+<td>Adjustable CEILING MOUNT STAND (12-24 INCH) WITH FITTING Max 2 FT</td>
+<td><input name="unit20" value="Nos"></td>
+<td><input name="qty20"></td>
+<td><input name="remark20"></td>
+</tr>
+
+<tr>
+<td>USB Extender</td>
+<td><input name="unit21" value="Nos"></td>
+<td><input name="qty21"></td>
+<td><input name="remark21"></td>
+</tr>
+
+<tr>
+<td>Display Quality Status</td>
+<td><input name="unit22" value="Nos"></td>
+<td><input name="qty22"></td>
+<td><input name="remark22"></td>
+</tr>
+
+<tr>
+<td>32" LED Monitor with 10 MTR HDMI Cable</td>
+<td><input name="unit23" value="Nos"></td>
+<td><input name="qty23"></td>
+<td><input name="remark23"></td>
+</tr>
+
+<tr>
+<td>HDMI Cable 15 MTR</td>
+<td><input name="unit24" value="Nos"></td>
+<td><input name="qty24"></td>
+<td><input name="remark24"></td>
+</tr>
+
+<tr>
+<td>8 Port POE Switch with 2 SFP Port</td>
+<td><input name="unit25" value="Nos"></td>
+<td><input name="qty25"></td>
+<td><input name="remark25"></td>
+</tr>
+
+<tr>
+<td>Installation Cost</td>
+<td><input name="unit26" value="No"></td>
+<td><input name="qty26"></td>
+<td><input name="remark26"></td>
+</tr>
+
+<tr>
+<td style="text-align:center;">Networking</td>
+<td>Installation of Access Point</td>
+<td><input name="unit27" value="Nos"></td>
+<td><input name="qty27"></td>
+<td><input name="remark27"></td>
+</tr>
+
+</table>
+
+<div style="text-align:center; margin:20px 0;">
+    <button type="button" onclick="downloadExcel()" style="padding:12px 25px; background:#10b981; color:white; border:none; border-radius:12px; cursor:pointer; font-weight:600; transition:.3s;">
+        Download Form Data as Excel
+    </button>
+</div>
+
+<div class="upload-section">
+<label>Upload Images</label>
+<input type="file" name="photos" multiple>
+
+<label>Upload Serial Excel</label>
+<input type="file" name="excel">
+</div>
+
+<div style="text-align:center; margin:20px 0;">
+    <button type="submit">Generate PDF</button>
+</div>
+
+
+</form>
+
+<script>
+document.getElementById("pdfForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    const res = await fetch("/generate", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    // 🔥 THIS triggers download in WebView
+    window.location.href = data.download_url;
+});
+</script>
+
+</div>
+
+</body>
+</html>

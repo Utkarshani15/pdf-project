@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PO Report - {{ po }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 5mm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+        }
+        html,body{
+margin:0;
+padding:0;
+}
+
+.pdf-page{
+    width:100%;
+    height:287mm;     /* ⭐ fixed printable area */
+    padding:6mm;
+    box-sizing:border-box;
+    position:relative;
+    page-break-after:always;
+}
+        .header{
+            width:100%;
+            margin-bottom:40px;
+        }
+        /* LOGO ROW */
+        .logo-row{
+            width:100%;
+            overflow:hidden;
+            margin-bottom:20px;
+        }
+        .logo-left{
+            float:left;
+            width:170px;
+            max-width:170px;
+        }
+        .logo-right{
+            float:right;
+            width:110px;
+            max-width:110px;
+        }
+        /* TITLE */
+        .title{
+            text-align:center;
+            font-size:24px;
+            font-weight:bold;
+            text-decoration:underline;
+            margin-top:25px;
+        }
+h3{
+    margin-top:0;
+}
+        .signature{
+    margin-top:30px;
+    display:flex;
+    flex-direction:column;   /* ⭐ MAIN MAGIC */
+    align-items:flex-start;    /* push everything to left */
+    gap:6px;
+}
+        .info-section{
+            width: 70%;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .row{
+            display: flex;
+            margin: 8px 0;
+        }
+        .label{
+            width: 220px;
+            font-weight: bold;
+        }
+        .value{
+            flex: 1;
+        }
+        .item-table{
+            width:100%;
+            border-collapse:collapse;
+            table-layout:fixed;
+            margin-top:20px;
+            min-width:600px;
+        }
+        .item-table td{
+            word-break:break-word;
+            border: 1px solid #000;
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+        .item-table th{
+            background:#4fa3c6;
+            text-align:center;
+            font-weight:bold;
+            padding:10px;
+            color:white;
+            border: 1px solid #000;
+            font-size: 12px;
+        }
+        .image-grid{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:20px 18px;
+    margin-top:25px;
+}
+.image-box{
+    width:50%;
+    height:300px;
+}
+.image-box img{
+    width:100%;
+    height:300px;
+    object-fit:cover;
+    border:2px solid #6a4f38;
+    display:block;
+}
+       .warranty-section {
+            text-align: center;
+            margin: 50px 0;
+        }
+        .warranty-section h2 {
+            margin-bottom: 30px;
+        }
+        .warranty-info {
+            font-size: 14px;
+            margin: 15px 0;
+        }
+        .signature{
+    margin-top:30px;
+    display:flex;
+    flex-direction:column;   /* ⭐ MAIN MAGIC */
+    align-items:flex-start;    /* push everything to left */
+    gap:6px;
+}
+        .signature img {
+            width: 80px;
+        }
+        .serial-container{
+            display:flex;
+            gap:25px;
+            justify-content:space-between;
+        }
+        .serial-wrapper{
+    height:245mm;     /* ⭐ magic */
+}
+
+.serial-table-full{
+width:100%;
+border-collapse:collapse;
+font-size:9px;        /* smaller clean telecom size */
+table-layout:fixed;
+height:100%;
+}
+
+.serial-table-full th{
+background:#efefef;
+}
+
+.serial-table-full td,
+.serial-table-full th{
+border:1px solid #000;
+padding:3px 4px;
+line-height:1.25;
+white-space:normal;          /* allow wrapping */
+word-break:break-word;       /* break long serial */
+}
+
+.serial-table-full .sn{
+width:45px;
+text-align:center;
+font-weight:bold;
+}
+
+.serial-table-full td:nth-child(4),
+.serial-table-full th:nth-child(4),
+.serial-table-full td:nth-child(10),
+.serial-table-full th:nth-child(10){
+width:32px;
+text-align:center;
+}
+
+.serial-table-full td:nth-child(6),
+.serial-table-full th:nth-child(6){
+border:none;
+background:transparent;
+width:28px;
+}
+
+.serial-table-full tbody tr{
+    height:6mm;
+}
+
+        .warranty-page{
+    padding:10mm;
+    page-break-inside:auto;
+}
+
+
+.sign-table{
+width:100%;
+margin-top:40px;
+page-break-inside:avoid;
+}
+
+.sign-table td{
+width:50%;
+vertical-align:top;
+}
+
+.sign-right{
+text-align:right;
+}
+
+.blank-line{
+width:170px;
+border-bottom:2px solid #999;
+height:35px;
+margin:15px 0;
+}
+
+.blank-line.right{
+margin-left:auto;
+}
+
+.stamp-img{
+width:100px;
+margin:10px 0;
+}
+
+.note{
+font-size:11px;
+margin-bottom:25px;
+margin-top:20px;
+}
+
+.sign-text{
+font-weight:bold;
+margin:15px 0;
+}
+    </style>
+<body>
+<!-- PAGE 1: Certificate + Table -->
+<div class="pdf-page">
+<div class="content-area">
+<div class="logo-row">
+<img src="file:///{{ static_base }}/decon.png" class="logo-left">
+<img src="file:///{{ static_base }}/blinkit.png" class="logo-right">
+</div>
+<h2 class="title">CCTV Work Completion Certificate</h2>
+</div>
+<div class="info-section">
+<div class="row">
+<span class="label">PO Number & Date:</span>
+<span class="value">{{ po }}</span>
+</div>
+<div class="row">
+<span class="label">Blinkit Store Name:</span>
+<span class="value">{{ store }}</span>
+</div>
+<div class="row">
+<span class="label">Site Type:</span>
+<span class="value">{{ site_type }}</span>
+</div>
+<div class="row">
+<span class="label">Store Address:</span>
+<span class="value">{{ address }}</span>
+</div>
+<div class="row">
+<span class="label">Start Date:</span>
+<span class="value">{{ start_date }}</span>
+</div>
+<div class="row">
+<span class="label">End Date:</span>
+<span class="value">{{ end_date }}</span>
+</div>
+</div>
+<table class="item-table">
+<thead>
+<tr>
+<th style="width:14%;">Category</th>
+<th style="width:46%;">Item Description</th>
+<th style="width:10%;">Unit</th>
+<th style="width:15%;">Actual Installed Qty</th>
+<th style="width:15%;">Remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan="26" style="text-align:center;">CCTV</td>
+<td>SITC of 2 MP Indoor Bullet IP Camera</td>
+<td>Nos</td>
+<td>{{ items[0].qty }}</td>
+<td>{{ items[0].remark }}</td>
+</tr>
+<tr>
+<td>SITC of 2 MP Indoor Dome IP Camera</td>
+<td>Nos</td>
+<td>{{ items[1].qty }}</td>
+<td>{{ items[1].remark }}</td>
+</tr>
+<tr>
+<td>Camera Box</td>
+<td>Nos</td>
+<td>{{ items[2].qty }}</td>
+<td>{{ items[2].remark }}</td>
+
+</tr>
+<tr>
+<td>12U Rack with other hardware</td>
+<td>Nos</td>
+<td>{{ items[3].qty }}</td>
+<td>{{ items[3].remark }}</td>
+ 
+</tr>
+<tr>
+<td>6U Rack with other hardware</td>
+<td>Nos</td>
+<td>{{ items[4].qty }}</td>
+<td>{{ items[4].remark }}</td>
+
+</tr>
+<tr>
+<td>9U Rack with other hardware</td>
+<td>Nos</td>
+<td>{{ items[5].qty }}</td>
+<td>{{ items[5].remark }}</td>
+</tr>
+<tr>
+<td>16 Port POE Switch with 2 SFP Port</td>
+<td>Nos</td>
+<td>{{ items[6].qty }}</td>
+<td>{{ items[6].remark }}</td>
+</tr>
+<tr>
+<td>24 Port POE Switch with 2 SFP Port </td>
+<td>Nos</td>
+<td>{{ items[7].qty }}</td>
+<td>{{ items[7].remark }}</td>
+
+</tr>
+<tr>
+<td>SITC of 8Tb Surveillance HDD</td>
+<td>Nos</td>
+<td>{{ items[8].qty }}</td>
+<td>{{ items[8].remark }}</td>
+
+</tr>
+<tr>
+<td>Patch Chord 1 Mtr</td>
+<td>Nos</td>
+<td>{{ items[9].qty }}</td>
+<td>{{ items[9].remark }}</td>
+
+</tr>
+<tr>
+<td>24 Port Patch Panel</td>
+<td>Nos</td>
+<td>{{ items[10].qty }}</td>
+<td>{{ items[10].remark }}</td>
+</tr>
+<tr>
+<td>1U Cable Manager</td>
+<td>Nos</td>
+<td>{{ items[11].qty }}</td>
+<td>{{ items[11].remark }}</td>
+</tr>
+<tr>
+<td>Supply & Laying of Cat-6 Cable (Only Copper Wire)</td>
+<td>Mtr</td>
+<td>{{ items[12].qty }}</td>
+<td>{{ items[12].remark }}</td>
+</tr>
+<tr>
+<td>SITC of 32CH NVR 4 Sata</td>
+<td>Nos</td>
+<td>{{ items[13].qty }}</td>
+<td>{{ items[13].remark }}</td>
+</tr>
+<tr>
+<td>RJ45 Connector</td>
+<td>Nos</td>
+<td>{{ items[14].qty }}</td>
+<td>{{ items[14].remark }}</td>
+</tr>
+<tr>
+<td>Supply & laying 25mm PVC Conduits with accessories</td>
+<td>Mtr</td>
+<td>{{ items[15].qty }}</td>
+<td>{{ items[15].remark }}</td>
+</tr>
+<tr>
+<td>HDMI Switcher (Vanition Switch With 2 HDMI Cables - 5 MTR)</td>
+<td>Nos</td>
+<td>{{ items[16].qty }}</td> 
+<td>{{ items[16].remark }}</td>
+</tr>
+<tr>
+<td>Wall Mount Stand For LED</td>
+<td>Nos</td>
+<td>{{ items[17].qty }}</td>
+<td>{{ items[17].remark }}</td>
+</tr>
+<tr>
+<td>Wireless Mouse</td>
+<td>Nos</td>
+<td>{{ items[18].qty }}</td>
+<td>{{ items[18].remark }}</td>
+</tr>
+<tr>
+<td>Adjustable CEILING MOUNT STAND (12-24 INCH) WITH FITTING Max 2 Ft</td>
+<td>Nos</td>
+<td>{{ items[19].qty }}</td>
+<td>{{ items[19].remark }}</td>
+</tr>
+<tr>
+<td>USB Extender</td>
+<td>Nos</td>
+<td>{{ items[20].qty }}</td>
+<td>{{ items[20].remark }}</td>
+</tr>
+<tr>
+<td>Display Quality Status</td>
+<td>Nos</td>
+<td>{{ items[21].qty }}</td>
+<td>{{ items[21].remark }}</td>
+</tr>
+
+<tr>
+<td> 32" LED Monitor with 10 MTR HDMI Cable</td>
+<td>Nos</td>
+<td>{{ items[22].qty }}</td>
+<td>{{ items[22].remark }}</td>
+</tr>
+
+<tr>
+<td>H D M I Cable 15 MTR</td>
+<td>Nos</td>
+<td>{{ items[23].qty }}</td>
+<td>{{ items[23].remark }}</td>
+</tr>
+
+<tr>
+<td>8 Port POE Switch with 2 SFP Port</td>
+<td>No</td>
+<td>{{ items[24].qty }}</td>
+<td>{{ items[24].remark }}</td>
+</tr>
+
+<tr>
+<td>Installation Cost</td>
+<td>No</td>
+<td>{{ items[25].qty }}</td>
+<td>{{ items[25].remark }}</td>
+</tr>
+
+<tr>
+<td style="text-align:center;">Networking</td>
+<td>Installation of Access Point</td>
+<td>Nos</td>
+<td>{{ items[26].qty }}</td>
+<td>{{ items[26].remark }}</td>
+</tr>
+
+</tbody>
+</table>
+</div>
+</div>
+{% if images %}
+{% for i in range(0, images|length, 6) %}
+
+<div class="pdf-page">
+<div class="header">
+<div class="logo-row">
+<img src="file:///{{ static_base }}/decon.png" class="logo-left">
+<img src="file:///{{ static_base }}/blinkit.png" class="logo-right">
+</div>
+<h2 class="title">Installation Images</h2>
+</div>
+<table class="image-grid">
+
+<tr>
+{% for j in range(2) %}
+<td class="image-box">
+{% if images|length > i+j %}
+<img src="{{ images[i+j] }}">
+{% endif %}
+</td>
+{% endfor %}
+</tr>
+
+<tr>
+{% for j in range(2,4) %}
+<td class="image-box">
+{% if images|length > i+j %}
+<img src="{{ images[i+j] }}">
+{% endif %}
+</td>
+{% endfor %}
+</tr>
+
+<tr>
+{% for j in range(4,6) %}
+<td class="image-box">
+{% if images|length > i+j %}
+<img src="{{ images[i+j] }}">
+{% endif %}
+</td>
+{% endfor %}
+</tr>
+
+</table>
+</div>
+
+{% endfor %}
+{% endif %}
+<!-- SERIAL NUMBER PAGES -->
+{% if serial_pages %}
+{% for page in serial_pages %}
+{% set page_offset = loop.index0 * 80 %}
+
+<div class="pdf-page serial-page">
+
+<div class="header">
+<div class="logo-row">
+<img src="file:///{{ static_base }}/decon.png" class="logo-left">
+<img src="file:///{{ static_base }}/blinkit.png" class="logo-right">
+</div>
+</div>
+
+<h3 style="text-align:center;margin-bottom:12px;">
+Serial Number of Installed Material
+</h3>
+
+<div class="serial-wrapper">
+
+<table class="serial-table-full">
+<thead>
+<tr>
+<th class="sn">S.N</th>
+<th>Item Name</th>
+<th>Make</th>
+<th>Qty</th>
+<th>Serial Number</th>
+
+<th style="width:30px;"></th>
+
+<th class="sn">S.N</th>
+<th>Item Name</th>
+<th>Make</th>
+<th>Qty</th>
+<th>Serial Number</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for i in range(40) %}
+<tr>
+
+{% if page.left|length > i %}
+<td class="sn">{{ page.offset + i + 1 }}</td>
+<td>{{ page.left[i]['Item Name'] }}</td>
+<td>{{ page.left[i]['Make'] }}</td>
+<td>{{ page.left[i]['Qty'] }}</td>
+<td>{{ page.left[i]['Serial Number'] }}</td>
+{% else %}
+<td></td><td></td><td></td><td></td><td></td>
+{% endif %}
+
+<td style="border:none; background:none;"></td>
+
+{% if page.right|length > i %}
+<td class="sn">{{ page.offset + i + 41 }}</td>
+<td>{{ page.right[i]['Item Name'] }}</td>
+<td>{{ page.right[i]['Make'] }}</td>
+<td>{{ page.right[i]['Qty'] }}</td>
+<td>{{ page.right[i]['Serial Number'] }}</td>
+{% else %}
+<td></td><td></td><td></td><td></td><td></td>
+{% endif %}
+
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+</div>
+
+
+</div>
+
+{% endfor %}
+{% endif %}
+
+<div class="pdf-page warranty-page">
+<div class="header">
+<div class="logo-row">
+<img src="file:///{{ static_base }}/decon.png" class="logo-left">
+<img src="file:///{{ static_base }}/blinkit.png" class="logo-right">
+</div>
+</div>
+<h2 class="title">Warranty Certificate</h2>
+
+<p style="margin-top:30px;">
+This is to certify that the CCTV System installed at <strong>{{ store }}</strong>
+has been handed over to the customer on <strong>{{ end_date }}</strong>
+in working conditions.
+</p>
+
+<p>
+The Warranty of the above system shall expire on <strong>{{ expiry_date }}</strong>.
+</p>
+
+<p>
+The warranty shall include replacing or repairing of the above hardware in case of malfunctioning of the system.
+</p>
+
+<p>
+The Warranty shall not include- Data recovery, upgradation of software, Power Supplies, any
+consumables if any. Malfunction Due to Natural calamities (Vandalism, Flood, Drought, Earthquake,
+and Riots), Third party intervention, pests, mishandling of equipment, electrical disturbances or any
+factor outside the normal.
+</p>
+
+<div style="margin-top:30px;">
+<table style="width:100%; border-collapse:collapse; font-size:10px; margin-top:10px;">
+<thead>
+<tr>
+<th style="border:1px solid #000; padding:4px; font-weight:bold; background:#4fa3c6; color:white;">Level</th>
+<th style="border:1px solid #000; padding:4px; font-weight:bold; background:#4fa3c6; color:white;">Name</th>
+<th style="border:1px solid #000; padding:4px; font-weight:bold; background:#4fa3c6; color:white;">Designation</th>
+<th style="border:1px solid #000; padding:4px; font-weight:bold; background:#4fa3c6; color:white;">Mail ID</th>
+<th style="border:1px solid #000; padding:4px; font-weight:bold; background:#4fa3c6; color:white;">Contact No.</th>
+</tr>
+</thead>
+<tbody>
+<tr><td style="border:1px solid #000; padding:4px; font-weight:bold;">L-1</td><td style="border:1px solid #000; padding:4px;">Md Aalam</td><td style="border:1px solid #000; padding:4px;">Tech Support</td><td style="border:1px solid #000; padding:4px;"><a href="mailto:support@deconglobalsolutions.com" style="color:blue; text-decoration:underline;">support@deconglobalsolutions.com</a></td><td style="border:1px solid #000; padding:4px;">9122660050</td></tr>
+<tr><td style="border:1px solid #000; padding:4px; font-weight:bold;">L-2</td><td style="border:1px solid #000; padding:4px;">Vikas Kumar</td><td style="border:1px solid #000; padding:4px;">Tech Support</td><td style="border:1px solid #000; padding:4px;"><a href="mailto:vikas.k@deconglobalsolutions.com" style="color:blue; text-decoration:underline;">vikas.k@deconglobalsolutions.com</a></td><td style="border:1px solid #000; padding:4px;">7905095975</td></tr>
+<tr><td style="border:1px solid #000; padding:4px; font-weight:bold;">L-3</td><td style="border:1px solid #000; padding:4px;">Pankaj Yadav</td><td style="border:1px solid #000; padding:4px;">Tech Lead</td><td style="border:1px solid #000; padding:4px;"><a href="mailto:pankaj@deconglobalsolutions.com" style="color:blue; text-decoration:underline;">pankaj@deconglobalsolutions.com</a></td><td style="border:1px solid #000; padding:4px;">9992616117</td></tr>
+<tr><td style="border:1px solid #000; padding:4px; font-weight:bold;">L-4</td><td style="border:1px solid #000; padding:4px;">Abhishek Dixit</td><td style="border:1px solid #000; padding:4px;">Tech Manager</td><td style="border:1px solid #000; padding:4px;"><a href="mailto:abhishekdixitmcc@gmail.com" style="color:blue; text-decoration:underline;">abhishekdixitmcc@gmail.com</a></td><td style="border:1px solid #000; padding:4px;">6396797718</td></tr>
+<tr><td style="border:1px solid #000; padding:4px; font-weight:bold;">L-5</td><td style="border:1px solid #000; padding:4px;">Arshad Khan</td><td style="border:1px solid #000; padding:4px;">Program Manager</td><td style="border:1px solid #000; padding:4px;"><a href="mailto:arshad@deconglobalsolutions.com" style="color:blue; text-decoration:underline;">arshad@deconglobalsolutions.com</a></td><td style="border:1px solid #000; padding:4px;">9654205723</td></tr>
+<tr><td style="border:1px solid #000; padding:4px; font-weight:bold;">L-6</td><td style="border:1px solid #000; padding:4px;">Sandeep Dubey</td><td style="border:1px solid #000; padding:4px;">General Manager-Service</td><td style="border:1px solid #000; padding:4px;"><a href="mailto:sandeep.dubey@deconglobalsolutions.com" style="color:blue; text-decoration:underline;">sandeep.dubey@deconglobalsolutions.com</a></td><td style="border:1px solid #000; padding:4px;">9565194355</td></tr>
+<tr><td style="border:1px solid #000; padding:4px; font-weight:bold;">L-7</td><td style="border:1px solid #000; padding:4px;">Gitesh Arora</td><td style="border:1px solid #000; padding:4px;">General Manager- Sales & OPS</td><td style="border:1px solid #000; padding:4px;"><a href="mailto:gitesh.arora@deconglobalsolutions.com" style="color:blue; text-decoration:underline;">gitesh.arora@deconglobalsolutions.com</a></td><td style="border:1px solid #000; padding:4px;">9650687876</td></tr>
+</tbody>
+</table>
+</div>
+
+<div style="margin-top:20px;">
+<div style="font-size:10px;">
+<p><b><u>All Cameras installed Correctly with no loose wires</u></b></p>
+<p><b><u>DVR/NVR Configured Properly</u></b></p>
+<p><b><u>Recording & Playback Tested</u></b></p>
+<p><b><u>User Training (SM) Completed</u></b></p>
+<p><b><u>Warranty Period mentioned</u></b></p>
+<p><b><u>Image to be attached in WCC</u></b></p>
+<p><b><u>NVR & Camera Username: - admin</u></b></p>
+<p><b><u>NVR & Camera Password :- Blinkit@897</u></b></p>
+</div>
+</div>
+
+<table class="sign-table">
+<tr>
+
+<td class="sign-left">
+
+<p><b>Name of the Blinkit Official:</b></p>
+<div class="blank-line"></div>
+<p class="sign-text">Signature & Stamp</p>
+</td>
+
+<td class="sign-right">
+<p><b>For Decon Telecom Solutions Pvt Ltd</b></p>
+<div class="blank-line right"></div>
+<p class="sign-text">Signature & Stamp</p>
+<br><br><br>
+<img src="file:///{{ static_base }}/signature1.png" style="width:150px; margin-top:10px;">
+
+</td>
+
+</tr>
+</table>
+</div>
+</div>
+</body>
+</html>
